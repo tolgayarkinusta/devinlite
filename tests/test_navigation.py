@@ -3,13 +3,9 @@ import cv2
 import supervision as sv
 from dataclasses import dataclass
 from typing import List, Tuple
-import sys
-import os
 import math
-
-# Import only the geometric calculation functions we need for testing
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from main import calculate_triangle_metrics, calculate_insole_length
+import numpy as np
+from geometry_utils import calculate_triangle_metrics, calculate_insole_length
 
 @dataclass
 class MockDetection:

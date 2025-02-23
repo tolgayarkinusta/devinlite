@@ -1,10 +1,6 @@
 import math
 import numpy as np
-import sys
-import os
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from main import calculate_triangle_metrics, calculate_insole_length
+from geometry_utils import calculate_triangle_metrics, calculate_insole_length
 
 def test_basic_geometry():
     """Test basic triangle geometry calculations"""
