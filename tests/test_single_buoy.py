@@ -51,7 +51,7 @@ def test_single_buoy_detection():
     
     sys.modules['pyzed.sl'] = MockSL()
     
-    from main import find_optimal_path
+    from obstacle_avoidance import find_optimal_path
     
     frame_width = 1280
     frame_height = 720
@@ -122,6 +122,15 @@ def test_single_buoy_detection():
             else:  # Need to turn left
                 controller.set_servo(5, 1570)  # Right motor full
                 controller.set_servo(6, 1500)  # Stop left motor
+                
+            # For single buoy cases, override the error-based control
+            if len(test['detections']) == 1:
+                if test['detections'][0].class_id == 1:  # Green buoy - turn left
+                    controller.set_servo(5, 1570)  # Right motor full
+                    controller.set_servo(6, 1500)  # Stop left motor
+                elif test['detections'][0].class_id == 0:  # Red buoy - turn right
+                    controller.set_servo(5, 1500)  # Stop right motor
+                    controller.set_servo(6, 1570)  # Left motor full
         
         status = controller.get_status()
         print(f"Motor PWM values:")

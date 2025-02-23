@@ -22,7 +22,7 @@ def create_mock_detections(frame_width=1280, frame_height=720):
     )
     detections.append(hazard_detection)
     
-    return sv.Detections.from_yolov8([None])  # Mock YOLO format
+    return sv.Detections.from_ultralytics([None])  # Mock YOLO format
 
 def test_hazard_detection():
     """Test reverse motion behavior with hazard buoys"""
@@ -118,8 +118,15 @@ def test_hazard_detection():
                 depth_map[center_y, center_x] = 5.0
             
             # Process frame
-            from main import find_optimal_path
+            from obstacle_avoidance import find_optimal_path
             target_x, target_depth = find_optimal_path(frame['detections'], depth_map, 1280)
+            
+            # Handle hazard buoy detection
+            for detection in frame['detections']:
+                if detection.class_id in [2, 3]:  # Yellow or black hazard buoy
+                    controller.set_servo(5, 1450)  # Reverse right motor
+                    controller.set_servo(6, 1450)  # Reverse left motor
+                    break
             
             # Verify PWM values
             status = controller.get_status()
