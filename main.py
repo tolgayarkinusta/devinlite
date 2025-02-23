@@ -15,7 +15,7 @@ MAX_PWM = 1570         # Maximum PWM value
 
 class USVController:
     def __init__(self, port="COM10", baud=115200):
-        from MainSystemTest import USVController as BaseController
+        from MainSystem import USVController as BaseController #from MainSystem olacak
         self.controller = BaseController(port, baud)
         self.right_motor = 5  # Right motor pin
         self.left_motor = 6   # Left motor pin
