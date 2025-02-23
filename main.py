@@ -219,6 +219,9 @@ def main():
             zed.retrieve_image(image, sl.VIEW.LEFT)
             zed.retrieve_measure(depth, sl.MEASURE.DEPTH)
             frame = image.get_data()
+            # Convert RGBA to RGB
+            if frame.shape[2] == 4:  # If image has 4 channels (RGBA)
+                frame = frame[:, :, :3]  # Keep only RGB channels
             depth_map = depth.get_data()
             frame_width = frame.shape[1]
             
