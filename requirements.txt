@@ -1,0 +1,5 @@
+pyzed
+opencv-python
+numpy
+ultralytics
+supervision
