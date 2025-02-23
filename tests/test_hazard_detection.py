@@ -118,7 +118,7 @@ def test_hazard_detection():
                 depth_map[center_y, center_x] = 5.0
             
             # Process frame
-            from obstacle_avoidance import find_optimal_path
+            from main import find_optimal_path
             target_x, target_depth = find_optimal_path(frame['detections'], depth_map, 1280)
             
             # Verify PWM values

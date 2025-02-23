@@ -68,7 +68,7 @@ def test_reverse_motion():
     import sys
     sys.modules['pyzed.sl'] = MockSL()
     
-    from obstacle_avoidance import navigate_usv
+    from main import navigate_usv
     
     frame_width = 1280
     frame_height = 720

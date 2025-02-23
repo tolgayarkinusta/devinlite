@@ -9,7 +9,7 @@ import math
 
 # Import only the geometric calculation functions we need for testing
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from obstacle_avoidance import calculate_triangle_metrics, calculate_insole_length
+from main import calculate_triangle_metrics, calculate_insole_length
 
 @dataclass
 class MockDetection:

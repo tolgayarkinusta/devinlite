@@ -51,7 +51,7 @@ def test_single_buoy_detection():
     
     sys.modules['pyzed.sl'] = MockSL()
     
-    from obstacle_avoidance import find_optimal_path
+    from main import find_optimal_path
     
     frame_width = 1280
     frame_height = 720
