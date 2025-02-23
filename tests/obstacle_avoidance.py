@@ -62,20 +62,14 @@ def get_depth_at_point(depth_map, x, y):
 
 def find_optimal_path(detections, depth_map, frame_width):
     """Find optimal navigation path between buoys"""
-    if not detections or len(detections) == 0:
+    if not detections or not isinstance(detections, sv.Detections) or len(detections) == 0:
         return None, None
     
     # Extract buoy positions and depths
     buoys = []
-    for detection in detections:
-        # Handle both tuple and Detection object formats
-        if isinstance(detection, tuple):
-            bbox = detection[0]
-            class_id = detection[1]
-        else:
-            bbox = detection.xyxy[0]
-            class_id = detection.class_id
-        
+    for i in range(len(detections.xyxy)):
+        bbox = detections.xyxy[i]
+        class_id = detections.class_id[i]
         x1, y1, x2, y2 = bbox
         center_x = (x1 + x2) / 2
         center_y = (y1 + y2) / 2
@@ -173,15 +167,20 @@ def navigate_usv(zed, model, controller, test_mode=False):
         detections = results[0]
     else:
         # Convert YOLO results to supervision format
-        detections = sv.Detections.from_ultralytics(results[0])
+        try:
+            detections = sv.Detections.from_ultralytics(results[0])
+        except:
+            # Handle case where results is not in expected format
+            return
     
     # Process detections
     if len(detections) > 0:
         # Check for hazard buoys first
         has_hazard = False
         for i in range(len(detections)):
-            bbox = detections.xyxy[i]
-            class_id = detections.class_id[i]
+            if i < len(detections.xyxy) and i < len(detections.class_id):
+                bbox = detections.xyxy[i]
+                class_id = detections.class_id[i]
             
             if class_id in [2, 3]:  # Yellow or black hazard buoy
                 controller.set_servo(5, REVERSE_PWM)  # Reverse right motor

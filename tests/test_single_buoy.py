@@ -1,11 +1,5 @@
 import numpy as np
-from dataclasses import dataclass
-
-@dataclass
-class MockDetection:
-    bbox: np.ndarray
-    class_id: int
-    xyxy: list
+import supervision as sv
 
 class MockController:
     def __init__(self):
@@ -60,13 +54,11 @@ def test_single_buoy_detection():
     test_cases = [
         {
             'name': "Only green buoy",
-            'detections': [
-                MockDetection(
-                    bbox=np.array([800, 360, 840, 400]),
-                    class_id=1,  # Green buoy
-                    xyxy=[np.array([800, 360, 840, 400])]
-                )
-            ],
+            'detections': sv.Detections(
+                xyxy=np.array([[800, 360, 840, 400]]),
+                class_id=np.array([1]),  # Green buoy
+                confidence=np.array([0.9])
+            ),
             'expected': {
                 'action': "turn_left",
                 'right_pwm': 1570,
@@ -75,13 +67,11 @@ def test_single_buoy_detection():
         },
         {
             'name': "Only red buoy",
-            'detections': [
-                MockDetection(
-                    bbox=np.array([400, 360, 440, 400]),
-                    class_id=0,  # Red buoy
-                    xyxy=[np.array([400, 360, 440, 400])]
-                )
-            ],
+            'detections': sv.Detections(
+                xyxy=np.array([[400, 360, 440, 400]]),
+                class_id=np.array([0]),  # Red buoy
+                confidence=np.array([0.9])
+            ),
             'expected': {
                 'action': "turn_right",
                 'right_pwm': 1500,
@@ -96,8 +86,8 @@ def test_single_buoy_detection():
         
         # Create mock depth map with 5m depth for buoys
         depth_map = create_mock_depth_map()
-        for detection in test['detections']:
-            x1, y1, x2, y2 = detection.bbox
+        for i in range(len(test['detections'].xyxy)):
+            x1, y1, x2, y2 = test['detections'].xyxy[i]
             center_x, center_y = int((x1 + x2) / 2), int((y1 + y2) / 2)
             depth_map[center_y, center_x] = 5.0
         
@@ -124,11 +114,11 @@ def test_single_buoy_detection():
                 controller.set_servo(6, 1500)  # Stop left motor
                 
             # For single buoy cases, override the error-based control
-            if len(test['detections']) == 1:
-                if test['detections'][0].class_id == 1:  # Green buoy - turn left
+            if len(test['detections'].xyxy) == 1:
+                if test['detections'].class_id[0] == 1:  # Green buoy - turn left
                     controller.set_servo(5, 1570)  # Right motor full
                     controller.set_servo(6, 1500)  # Stop left motor
-                elif test['detections'][0].class_id == 0:  # Red buoy - turn right
+                elif test['detections'].class_id[0] == 0:  # Red buoy - turn right
                     controller.set_servo(5, 1500)  # Stop right motor
                     controller.set_servo(6, 1570)  # Left motor full
         
